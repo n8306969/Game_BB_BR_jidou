@@ -18,42 +18,43 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 10px;
         }
 
         .container {
             background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
+            padding: 20px 15px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            max-width: 350px;
             width: 100%;
         }
 
         .title {
             text-align: center;
             color: #333;
-            margin-bottom: 30px;
-            font-size: 24px;
+            margin-bottom: 15px;
+            font-size: 18px;
             font-weight: bold;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             color: #555;
             font-weight: 600;
+            font-size: 14px;
         }
 
         input[type="number"] {
             width: 100%;
-            padding: 15px;
+            padding: 10px;
             border: 2px solid #e1e5e9;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 16px;
             transition: border-color 0.3s ease;
         }
@@ -63,49 +64,68 @@
             border-color: #667eea;
         }
 
+        .button-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
         .calculate-btn {
-            width: 100%;
-            padding: 15px;
+            flex: 1;
+            padding: 12px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 18px;
+            border-radius: 8px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s ease;
-            margin-bottom: 20px;
         }
 
-        .calculate-btn:hover {
+        .clear-btn {
+            flex: 0 0 80px;
+            padding: 12px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .calculate-btn:hover, .clear-btn:hover {
             transform: translateY(-2px);
         }
 
         .result-container {
             background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
             display: none;
         }
 
         .result-text {
             font-family: 'Courier New', monospace;
-            font-size: 18px;
+            font-size: 14px;
             color: #333;
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             word-break: break-all;
+            line-height: 1.4;
         }
 
         .copy-btn {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: #28a745;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 6px;
+            font-size: 14px;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
@@ -118,13 +138,19 @@
             background: #007bff;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 400px) {
             .container {
-                padding: 25px;
+                padding: 15px 10px;
+                margin: 5px;
             }
             
             .title {
-                font-size: 20px;
+                font-size: 16px;
+            }
+
+            input[type="number"] {
+                font-size: 14px;
+                padding: 8px;
             }
         }
     </style>
@@ -148,7 +174,10 @@
             <input type="number" id="rb" placeholder="例: 500" min="0">
         </div>
         
-        <button class="calculate-btn" onclick="calculate()">計算</button>
+        <div class="button-container">
+            <button class="calculate-btn" onclick="calculate()">計算</button>
+            <button class="clear-btn" onclick="clearAll()">クリア</button>
+        </div>
         
         <div class="result-container" id="resultContainer">
             <div class="result-text" id="resultText"></div>
@@ -220,6 +249,18 @@
                     copyBtn.className = 'copy-btn';
                 }, 2000);
             }
+        }
+        
+        function clearAll() {
+            document.getElementById('games').value = '';
+            document.getElementById('bb').value = '';
+            document.getElementById('rb').value = '';
+            document.getElementById('resultContainer').style.display = 'none';
+            
+            // コピーボタンをリセット
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.textContent = 'コピー';
+            copyBtn.className = 'copy-btn';
         }
         
         // Enterキーで計算実行
