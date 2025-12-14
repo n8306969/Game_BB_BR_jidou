@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>パチスロデータ計算機</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-text {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 15px;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        .copy-btn.copied {
+            background: #007bff;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            .title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">パチスロデータ計算機</h1>
+        
+        <div class="form-group">
+            <label for="games">ゲーム数:</label>
+            <input type="number" id="games" placeholder="例: 5377" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="bb">BB回数:</label>
+            <input type="number" id="bb" placeholder="例: 13" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="rb">RB回数:</label>
+            <input type="number" id="rb" placeholder="例: 500" min="0">
+        </div>
+        
+        <button class="calculate-btn" onclick="calculate()">計算</button>
+        
+        <div class="result-container" id="resultContainer">
+            <div class="result-text" id="resultText"></div>
+            <button class="copy-btn" id="copyBtn" onclick="copyResult()">コピー</button>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const games = parseInt(document.getElementById('games').value);
+            const bb = parseInt(document.getElementById('bb').value);
+            const rb = parseInt(document.getElementById('rb').value);
+            
+            if (isNaN(games) || isNaN(bb) || isNaN(rb)) {
+                alert('すべての項目に数値を入力してください');
+                return;
+            }
+            
+            if (games <= 0) {
+                alert('ゲーム数は1以上の数値を入力してください');
+                return;
+            }
+            
+            // BB確率計算 (ゲーム数 ÷ BB回数)
+            const bbProb = bb > 0 ? (games / bb).toFixed(1) : '∞';
+            
+            // RB確率計算 (ゲーム数 ÷ RB回数)
+            const rbProb = rb > 0 ? (games / rb).toFixed(1) : '∞';
+            
+            // フォーマット: G:5377 BB:13(413.6) RB:500(10.8)
+            const result = `G:${games} BB:${bb}(${bbProb}) RB:${rb}(${rbProb})`;
+            
+            document.getElementById('resultText').textContent = result;
+            document.getElementById('resultContainer').style.display = 'block';
+            
+            // コピーボタンをリセット
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.textContent = 'コピー';
+            copyBtn.className = 'copy-btn';
+        }
+        
+        async function copyResult() {
+            const resultText = document.getElementById('resultText').textContent;
+            const copyBtn = document.getElementById('copyBtn');
+            
+            try {
+                await navigator.clipboard.writeText(resultText);
+                copyBtn.textContent = 'コピー完了！';
+                copyBtn.className = 'copy-btn copied';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'コピー';
+                    copyBtn.className = 'copy-btn';
+                }, 2000);
+            } catch (err) {
+                // フォールバック: 古いブラウザ対応
+                const textArea = document.createElement('textarea');
+                textArea.value = resultText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                copyBtn.textContent = 'コピー完了！';
+                copyBtn.className = 'copy-btn copied';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'コピー';
+                    copyBtn.className = 'copy-btn';
+                }, 2000);
+            }
+        }
+        
+        // Enterキーで計算実行
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculate();
+            }
+        });
+    </script>
+</body>
+</html>
